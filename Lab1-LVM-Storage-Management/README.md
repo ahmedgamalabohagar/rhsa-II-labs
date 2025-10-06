@@ -16,55 +16,87 @@
   ```bash
      lsblk
 ```
- [![](Images/2-alice-info.jpg)](Images/2-alice-info.jpg)
+ [![](images/1.PNG)](images/1.PNG)
 
-  ### 2. Create a new group
+ - In this project, we will be working on the /dev/sdb disk to create and manage partitions.
+
+  ### 2. Initialize the disk with a **GPT** partition table.
   ```bash
-     sudo groupadd developers
+     parted /dev/sdb
+     mklabel Gpt
   ```
-  ### 3. add user to group developers
+  ### 3. Create a **primary** partition.
   ```bash
-     sudo usermod -aG developers alice
+     mkpart primary xfs 0G 3G
+     print
   ```
+  [![](images/2.PNG)](images/2.PNG)
 
 
-
-  ### 4 . verify user details 
+  ### 4. **Create a Physical Volume (PV)** on the partition. 
   ```bash
-   id alice
+   pvcreate /dev/sdb
+   pvs
 ```
-[![](Images/2-alice-info.jpg)](Images/2-alice-info.jpg)
-    
-  - or Display the contents of the /etc/group file and view member of developers group
-[![](Images/1-user-addedTo-developerGroup.jpg)](Images/1-user-addedTo-developerGroup.jpg)
+  [![](images/3 pvs.PNG)](images/3 pvs.PNG)
 
- ### 5. change password expire date
+    
+ ### 5. **Create a Volume Group (VG)** using the physical volume.
+
   ```bash
-     sudo usermod -e 2026-04-24 alice
+    vgcreate vg0 /dev/sdb
+    vgs
   ```
- ### 6. verify password details
+  [![](images/4vgs.PNG)](images/4vgs.PNG)
+
+ ### 6. **Create a Logical Volume (LV)** inside the volume group.
   ```bash 
-      sudo cat /etc/shadow
+      lvcreate -L 2GB -n lv0 vg0
+      lvs
 ```
-[![](Images/3-verify-expire-date.jpg)](Images/3-verify-expire-date.jpg)
-  - Display the content of /etc/shadow file to verify info
+  [![](images/lvs.PNG)](images/lvs.PNG)
+  
 
- ### 7. Configure sudo for one of them
+ ### 7. Format the LV0 using the **XFS** filesystem.
   ```bash
-       sudo usermod -aG wheel alice
+       mkfs.xfs /dev/vg0/lv0
   ```
-  [![](Images/4-addTo-wheel.jpg)](Images/4-addTo-wheel.jpg) 
-    
+
+ ### 8. mount
+  ```bash
+       mount /dev/vg0/lv0  /data
+  ```
+  [![](images/6mount.PNG)](images/6mount.PNG)
+
+  - We mounted the logical volume using the mount command.
+  - This mount is temporary, meaning it will be lost after a reboot.
+  
+ ### 9. permanent mount
+ #### get UUID of logical volume 
+  ```bash
+       lsblk -f 
+  ```
+  [![](images/-f.PNG)](images/-f.PNG)
+  #### modify /etc/fstab 
+  ```bash
+       sudo vim /etc/fstab 
+  ```
+  [![](images/7mount per.PNG)](images/7mount per.PNG)
+  ```bash
+    mount -a 
+  ```
+  - to mount /data immediately — no reboot needed.
+  - If there’s an error in your /etc/fstab, mount -a will show it, which is great for testing safely.
+
+ ### 10. extend lv
+  ```bash
+       lvextend -L +500MB /dev/vg0/lv0
+  ```
+  
   ## Challenges
-  - At first, I tried setting the password using:
-```bash
-sudo usermod -p password alice
-```
--This stored the password as plain text in /etc/shadow, which is a security risk.
-- To fix this, I switched to using the passwd command:
-  ```bash
-  sudo passwd alice
-  ```
-  -This stored the password securely as a hash instead of plain text.
-
-
+  ### We created a Logical Volume (LV) using the lvcreate command.
+  - The -L option is used to specify the LV size in units like MB or GB (for example: -L 2G).
+  - The -l option is used to specify the size in PEs (Physical Extents) instead of GB.
+  ### when extend the logical volume
+  - If you forget to add the + before the size (for example: -L 1G),
+  - it will set the total size to 1 GB, not add 1 GB — effectively overriding the LV size instead of extending it.
