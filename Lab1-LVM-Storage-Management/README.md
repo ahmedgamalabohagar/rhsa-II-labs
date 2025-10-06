@@ -81,7 +81,10 @@
   ```bash
        sudo vim /etc/fstab 
   ```
-  [![](images/7mount per.PNG)](images/7mount per.PNG)
+
+  [![](images/pmount.PNG)](images/pmount.PNG)
+
+  
   ```bash
     mount -a 
   ```
@@ -100,3 +103,4 @@
   ### when extend the logical volume
   - If you forget to add the + before the size (for example: -L 1G),
   - it will set the total size to 1 GB, not add 1 GB — effectively overriding the LV size instead of extending it.
+
