@@ -26,7 +26,7 @@
   ```bash
      systemctl enable --now firewalld
   ```
- [![](images/2.png)](images/2.png)
+ [![](images/new.png)](images/new.png)
 
 
   ### 3. list firewall zones.
@@ -66,5 +66,6 @@ firewall-cmd --permanent --remove-service=cockpit
 
 - I forgot to run firewall-cmd --reload after adding new rules,
 - so the changes didn’t take effect until I reloaded the firewall configuration.
+
 
 
