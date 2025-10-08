@@ -8,8 +8,6 @@
 
 - Configure permanent firewall rules that persist after reboot.
 
-- Assign interfaces to specific zones for better network segmentation.
-
 - Verify and test firewall configurations to ensure network security and service accessibility. 
 
 ## Steps
@@ -66,6 +64,7 @@ firewall-cmd --permanent --remove-service=cockpit
 
 - I forgot to run firewall-cmd --reload after adding new rules,
 - so the changes didn’t take effect until I reloaded the firewall configuration.
+
 
 
 
