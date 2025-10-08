@@ -41,7 +41,7 @@ firewall-cmd --permanent --add-service=http
   ### 5. remove service. 
 
  ```bash
-firewall-cmd --permanent --remove-service=cockpit
+firewall-cmd --permanent --remove-service=https
 ```
 
   ### 6. add port 8080/tcp. 
@@ -64,6 +64,7 @@ firewall-cmd --permanent --remove-service=cockpit
 
 - I forgot to run firewall-cmd --reload after adding new rules,
 - so the changes didn’t take effect until I reloaded the firewall configuration.
+
 
 
 
