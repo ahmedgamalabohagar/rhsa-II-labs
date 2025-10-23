@@ -16,7 +16,7 @@
 
 ## Steps
 
-  ### create cron job write date in /home/ahmed/mycron.log every minute
+  ### 1. create cron job write date in /home/ahmed/mycron.log every minute.
 - edit crontab
 
 ```bash
@@ -40,50 +40,56 @@
 
  
 
-  ### 2.filter logs related to sshd service .
+  ### 2. create job  using at execute command run after two minutes.
+  - run this command
   ```bash
-     journalctl _SYSTEMD_UNIT=sshd.service 
+    echo "echo hello >> ~/newfile.txt | at now + 2 minutes "
   ```
- [![](images/2.PNG)](images/2.PNG)
-
-
-  ### 3. display last boot logs .
-  ```bash
-     journalctl -b
-  ```
-
-  [![](images/3.PNG)](images/3.PNG)
-
-  ### 4. enable persistent logging.
-  #### 1. create persistent log directory.
-  ```bash
- mkdir /var/log/journal
+  - list scheduled jobs
+```bash
+    atq
 ```
-  #### 2. edit journald configuration file 
-  
-  ```bash
- vim /etc/systemd/jounald.conf
-```
- - then add this line
-  ```bash
- Storage = persistent
-```
-#### 3. restart journald service
-  ```bash
- systemctl restart systemd-journald
-```
-#### 4. verfiy it's working 
-- If you find log files under /var/log/journal and can view previous boot logs, persistent logging is working correctly.
-[![](images/4.PNG)](images/4.PNG)
+[![](images/2.PNG)](images/2.PNG)
 
-### 5. export specific logs into text file . 
+  - display ~/newfile.txt content
 
- ```bash
-journalctl -u sshd > sshd-logs.txt
-cat sshd-logs.txt
+[![](images/3.PNG)](images/3.PNG)
+
+  ### 3. create cron System-wide in /etc/cron.d .
+- create new file /etc/cron.d/newjob 
+```bash
+  vim /etc/cron.d//newjob
 ```
-[![](images/5.PNG)](images/5.PNG)
+- add this line 
+```bash
+* * * * * root cal >> /var/log/mycron.log
+```
+- change file owner to root
+```bash
+chown root:root /etc/cron.d/newjob
+```
+- display /var/log/mycron.log content
 
+  [![](images/5.PNG)](images/5.PNG)
+
+## Challenge:
+- When creating the cron job, it didn’t run as expected.
+
+### Cause:
+- The file inside /etc/cron.d/ was not owned by root:root.
+
+### Details:
+- System-wide cron files must be owned by the root user.
+- When the ownership is incorrect, the cron daemon skips the job and logs an error 
+
+### Fix:
+- Changed the file owner to root using:
+
+```bash
+sudo chown root:root /etc/cron.d/newjob
+```
+
+- After that, the cron job executed successfull
 
 
 
