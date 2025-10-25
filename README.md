@@ -2,7 +2,7 @@
 this repo contain RH134 labs and exercises
 ## Labs
 
-- [Lab 1: LVM-Storage-Managment](Lab1-LVM-Storage-Managment/README.md)
+- [Lab 1: LVM-Storage-Managment](Lab1-LVM-Storage-Management/README.md)
 
 - [Lab 2: disk-quotas](lab2-disk-quotas/README.md)
 
@@ -15,4 +15,5 @@ this repo contain RH134 labs and exercises
 - [Lab 6: scheduled-jobs ](lab6-scheduled-jobs/README.md)
 
 - [Lab 7: logs-journal ](lab7-logs-journal/README.md)
+
 
